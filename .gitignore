@@ -1,6 +1,6 @@
 # Ignore environment / secrets
 db.php
-sftp.json
+
 .env
 
 # Ignore logs
@@ -14,3 +14,9 @@ node_modules/
 
 # Ignore cache files
 *.cache
+
+# VS Code settings
+.vscode/
+
+# SFTP config (if you use it locally)
+.vscode/sftp.json
