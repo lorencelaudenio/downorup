@@ -35,6 +35,6 @@ CREATE TABLE checks (
     response_time INT,
     checked_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
-
+```
 2. Configure database in db.php
 3. Run on local server or hosting
