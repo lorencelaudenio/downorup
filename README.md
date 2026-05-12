@@ -38,3 +38,5 @@ CREATE TABLE checks (
 ```
 2. Configure database in db.php
 3. Run on local server or hosting
+
+Built by Lorence (Renz)
