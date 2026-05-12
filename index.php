@@ -117,6 +117,115 @@ if(isset($_POST['ajax'])){
 <title>DownOrUp</title>
 
 <style>
+    .header{
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    background:#0f172a;
+    border-bottom:1px solid #1e293b;
+    padding:15px 25px;
+
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+}
+
+.logo{
+    font-size:20px;
+    font-weight:bold;
+    color:#22c55e;
+    text-decoration:none;
+}
+
+.logo:hover{
+    opacity:0.8;
+}
+
+/* NAV (desktop default) */
+.nav{
+    display:flex;
+    gap:18px;
+}
+
+.nav a{
+    color:#94a3b8;
+    text-decoration:none;
+    font-size:14px;
+}
+
+.nav a:hover{
+    color:#22c55e;
+}
+
+/* HAMBURGER */
+.menu-toggle{
+    display:none;
+    font-size:26px;
+    color:#22c55e;
+    cursor:pointer;
+}
+
+/* 📱 MOBILE */
+@media(max-width:600px){
+
+    .menu-toggle{
+        display:block;
+    }
+
+    .nav{
+        display:none;
+        position:absolute;
+        top:65px;
+        left:0;
+        width:100%;
+        background:#0f172a;
+        flex-direction:column;
+        border-bottom:1px solid #1e293b;
+        padding:10px 0;
+    }
+
+    .nav a{
+        padding:12px 20px;
+        width:100%;
+    }
+
+    .nav.active{
+        display:flex;
+    }
+}
+    .menu-toggle{
+    display:none;
+    font-size:26px;
+    color:#22c55e;
+    cursor:pointer;
+}
+
+/* MOBILE MENU */
+@media(max-width:600px){
+
+    .menu-toggle{
+        display:block;
+    }
+
+    .nav{
+        display:none;
+        width:100%;
+        flex-direction:column;
+        background:#0f172a;
+        border-top:1px solid #1e293b;
+        padding:10px 0;
+        margin-top:10px;
+    }
+
+    .nav a{
+        padding:10px 0;
+        width:100%;
+    }
+
+    .nav.active{
+        display:flex;
+    }
+}
     .dashboard{
     display:grid;
     grid-template-columns: 1fr 1fr;
@@ -144,75 +253,8 @@ if(isset($_POST['ajax'])){
         grid-template-columns:1fr;
     }
 }
-.header{
-    position: sticky;
-    top: 0;
-    z-index: 1000;
-    background:#0f172a;
-    border-bottom:1px solid #1e293b;
-    padding:15px 25px;
 
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    flex-wrap:wrap;
-    gap:10px;
-}
 
-/* Logo */
-.logo{
-    font-size:20px;
-    font-weight:bold;
-    color:#22c55e;
-    text-decoration:none;
-    white-space:nowrap;
-}
-
-.logo:hover{
-    opacity:0.8;
-}
-
-/* Nav */
-.nav{
-    display:flex;
-    gap:18px;
-    flex-wrap:wrap;
-}
-
-.nav a{
-    color:#94a3b8;
-    text-decoration:none;
-    font-size:14px;
-    white-space:nowrap;
-}
-
-.nav a:hover{
-    color:#22c55e;
-}
-
-/* 📱 MOBILE */
-@media(max-width:600px){
-
-    .header{
-        flex-direction:column;
-        align-items:flex-start;
-    }
-
-    .nav{
-        width:100%;
-        justify-content:flex-start;
-        gap:12px;
-        flex-wrap:wrap;
-    }
-
-    .nav a{
-        font-size:13px;
-    }
-
-    .logo{
-        font-size:18px;
-    }
-}
     .spinner{
     width:18px;
     height:18px;
@@ -484,7 +526,12 @@ button:hover{
         DownOrUp
     </a>
 
-    <nav class="nav">
+    <!-- hamburger button -->
+    <div class="menu-toggle" onclick="toggleMenu()">
+        ☰
+    </div>
+
+    <nav class="nav" id="navMenu">
         <a href="#history">History</a>
         <a href="#trending">Trending</a>
         <a href="https://github.com/lorencelaudenio/downorup" target="_blank">
@@ -559,26 +606,28 @@ button:hover{
 loadHistory();
 
 async function checkWebsite(){
-    const checkBtn = document.getElementById('checkBtn');
-const spinner = document.getElementById('spinner');
-const btnText = document.getElementById('btnText');
-
-checkBtn.disabled = true;
-spinner.style.display = 'block';
-btnText.innerHTML = 'Checking';
 
     const input = document.getElementById('websiteInput');
-    const loading = document.getElementById('loading');
-    const result = document.getElementById('result');
-    const statusText = document.getElementById('statusText');
-    const details = document.getElementById('details');
-
     let url = input.value.trim();
 
     if(!url){
         alert('Enter a website URL');
+        input.focus();
         return;
     }
+
+    const checkBtn = document.getElementById('checkBtn');
+    const spinner = document.getElementById('spinner');
+    const btnText = document.getElementById('btnText');
+
+    checkBtn.disabled = true;
+    spinner.style.display = 'block';
+    btnText.innerHTML = 'Checking';
+
+    const loading = document.getElementById('loading');
+    const result = document.getElementById('result');
+    const statusText = document.getElementById('statusText');
+    const details = document.getElementById('details');
 
     loading.style.display = 'block';
     result.style.display = 'none';
@@ -595,9 +644,10 @@ btnText.innerHTML = 'Checking';
         });
 
         const data = await response.json();
+
         checkBtn.disabled = false;
-spinner.style.display = 'none';
-btnText.innerHTML = 'Check';
+        spinner.style.display = 'none';
+        btnText.innerHTML = 'Check';
 
         loading.style.display = 'none';
         result.style.display = 'block';
@@ -605,31 +655,25 @@ btnText.innerHTML = 'Check';
         statusText.innerHTML = data.status;
         statusText.className = 'status ' + data.status.toLowerCase();
 
-        if(data.status === 'UP'){
-
-            details.innerHTML = `
-                Website: ${data.url}<br>
-                HTTP Status: ${data.code}<br>
-                Response Time: ${data.time}ms
-            `;
-
-        }else{
-
-            details.innerHTML = `
-                Website: ${data.url}<br>
-                HTTP Status: ${data.code}
-            `;
-        }
+        details.innerHTML = `
+            Website: ${data.url}<br>
+            HTTP Status: ${data.code}<br>
+            Response Time: ${data.time}ms
+        `;
 
         saveHistory(data);
 
+        // 🔥 IMPORTANT: refresh lists after check
+        loadHistory();
+        loadTrending();
+
     }catch(error){
+
         checkBtn.disabled = false;
-spinner.style.display = 'none';
-btnText.innerHTML = 'Check';
+        spinner.style.display = 'none';
+        btnText.innerHTML = 'Check';
 
         loading.style.display = 'none';
-
         result.style.display = 'block';
 
         statusText.innerHTML = 'DOWN';
@@ -755,6 +799,10 @@ function loadTrending(){
     }
 });
 
+function toggleMenu(){
+    const nav = document.getElementById('navMenu');
+    nav.classList.toggle('active');
+}
 </script>
 <footer class="footer">
 
