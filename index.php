@@ -62,6 +62,17 @@ if(isset($_POST['ajax'])){
         exit;
     }
 
+    // ✅ ADD THIS VALIDATION HERE
+if (!preg_match('/^(https?:\/\/)?([\w-]+\.)+[\w-]{2,}/', $url)) {
+    echo json_encode([
+        'status' => 'ERROR',
+        'message' => 'Invalid URL format'
+    ]);
+    exit;
+}
+
+
+
     if(!preg_match('/^https?:\/\//', $url)){
         $url = 'https://' . $url;
     }
@@ -619,11 +630,21 @@ async function checkWebsite(){
     const input = document.getElementById('websiteInput');
     let url = input.value.trim();
 
-    if(!url){
-        alert('Enter a website URL');
-        input.focus();
-        return;
-    }
+// ❌ empty check
+if (!url) {
+    alert('Enter a website URL');
+    input.focus();
+    return;
+}
+
+// ❌ basic URL validation
+const isValidUrl = /^(https?:\/\/)?([\w-]+\.)+[\w-]{2,}([\/\w .-]*)*\/?$/;
+
+if (!isValidUrl.test(url)) {
+    alert('Invalid URL. Example: facebook.com or https://facebook.com');
+    input.focus();
+    return;
+}
 
     const checkBtn = document.getElementById('checkBtn');
     const spinner = document.getElementById('spinner');
