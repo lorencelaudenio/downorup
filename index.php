@@ -28,18 +28,18 @@ if(isset($_GET['trending'])){
 
     header('Content-Type: application/json');
 
-    $result = $conn->query("
-        SELECT 
-            url,
-            COUNT(*) AS down_count,
-            MAX(checked_at) AS last_report
-        FROM checks
-        WHERE status = 'DOWN'
-        AND checked_at >= NOW() - INTERVAL 1 HOUR
-        GROUP BY url
-        ORDER BY down_count DESC
-        LIMIT 10
-    ");
+   $result = $conn->query("
+    SELECT 
+        url,
+        COUNT(*) AS down_count,
+        MAX(checked_at) AS last_report
+    FROM checks
+    WHERE status = 'DOWN'
+    AND checked_at >= NOW() - INTERVAL 1 DAY
+    GROUP BY url
+    ORDER BY down_count DESC
+    LIMIT 10
+");
 
     $data = [];
 
@@ -117,6 +117,25 @@ if(isset($_POST['ajax'])){
 <title>DownOrUp</title>
 
 <style>
+    .scroll-box{
+    max-height: 420px;
+    overflow-y: auto;
+    padding-right: 8px;
+}
+
+/* scrollbar styling */
+.scroll-box::-webkit-scrollbar {
+    width: 6px;
+}
+
+.scroll-box::-webkit-scrollbar-thumb {
+    background: #334155;
+    border-radius: 10px;
+}
+
+.scroll-box::-webkit-scrollbar-thumb:hover {
+    background: #475569;
+}
     .header{
     position: sticky;
     top: 0;
@@ -580,23 +599,13 @@ button:hover{
     <div class="dashboard">
 
     <div class="panel">
-
-        <h2 class="history-title" id="history-title">
-            Last 24 Hours
-        </h2>
-
-        <div class="history" id="history"></div>
-
+        <h2 class="history-title">Last 24 Hours</h2>
+        <div class="history scroll-box" id="history"></div>
     </div>
 
     <div class="panel">
-
-        <h2 class="history-title" id="trending-title">
-            🔥 Trending Down Websites
-        </h2>
-
-        <div class="history" id="trending"></div>
-
+        <h2 class="history-title">🔥 Trending Down Websites</h2>
+        <div class="history scroll-box" id="trending"></div>
     </div>
 
 </div>
