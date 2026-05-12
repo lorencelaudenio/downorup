@@ -2,6 +2,8 @@
 
 A simple real-time website status checker that tells if a website is UP or DOWN, with global trending outage tracking.
 
+![DownOrUp Banner](https://raw.githubusercontent.com/lorencelaudenio/downorup/main/assets/banner.png)
+
 ## 🚀 Features
 
 - Website uptime checker
